@@ -1,0 +1,12 @@
+{
+    "language":"en_US",
+    "emojis": {
+        "emoji_success":    "<a:yes:746713322824401058>", 
+        "emoji_error":      "<a:no:746713348279763085>", 
+        "emoji_arrow":      "<:arrowright:773189373092167690>",
+        "emoji_loading":    "⏲️", 
+        "emoji_warn":       "⚠️",
+        "emoji_mc":     "<a:mc:786538881646067716>"
+    },
+    "color": 4156126
+}
