@@ -6,7 +6,7 @@ export default new Command({
     description: "replies with pong and the latency",
     deferReply: true,
     run: async ({ interaction }) => {
-        const response = await language(interaction.guild, "commands.ping.reponse", { ping: interaction.client.ws.ping.toString() });
+        const response = await language(interaction.guild, "commands.ping.response", { ping: interaction.client.ws.ping.toString() });
         interaction.followUp(response);
     }
 });
