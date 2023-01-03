@@ -4,7 +4,6 @@ import GuildModel from "../models/guild";
 import { ApplicationCommandOptionType, Guild, GuildMember, InteractionType } from "discord.js";
 import config from "../config.json"
 import { ExtendedInteraction } from "../typings/Command";
-import { client } from "..";
 
 export function interpolate(str: string, vars: { [x: string]: any; }) {
     for (let key in vars) {
@@ -18,19 +17,19 @@ export async function addNewMember(interaction?: ExtendedInteraction, member?: G
     if (interaction && !member) member = interaction.member as GuildMember;
     
     // find one and update user in db
-    const user = await User.findOneAndUpdate({id: interaction.member.user.id}, interaction.member.user, {new: true, upsert: true});
-    if(!user) new User(interaction.member.user).save();
+    const user = await User.findOneAndUpdate({id: member.user.id}, member.user, {new: true, upsert: true});
+    if(!user) new User(member.user).save();
     
     // Add member to db
-    const memberdb = await Member.findOne({userId: interaction.member.id, guildId: interaction.member.guild.id});
-    if(!memberdb) new Member({userId: interaction.member.id, guildId: interaction.member.guild.id}).save();
+    const memberdb = await Member.findOne({userId: member.id, guildId: member.guild.id});
+    if(!memberdb) new Member({userId: member.id, guildId: member.guild.id}).save();
     
     // Add command interaction option user to db if not set
-    if(interaction.type === InteractionType.ApplicationCommand){
+    if(interaction && interaction.type === InteractionType.ApplicationCommand){
         for (const option of interaction.options.data) {
             if(option.type === ApplicationCommandOptionType.User) {
                 // find one and update user in db
-                const user = await User.findOneAndUpdate({id: option.user.id}, option.user, {new: true, upsert: true});
+                const user = await User.findOneAndUpdate({id: interaction.member.user.id}, {$set: {...interaction.member.user}}, {new: true, upsert: true, setDefaultsOnInsert: true});
                 if(!user) new User(option.user).save();
 
                 // Add member to db
@@ -39,6 +38,9 @@ export async function addNewMember(interaction?: ExtendedInteraction, member?: G
             }
         }
     }
+
+    const returnMemberdb = await Member.findOne({userId: member.id, guildId: member.guild.id});
+    return returnMemberdb;
 }
 
 export async function addNewGuild(guild : Guild) {

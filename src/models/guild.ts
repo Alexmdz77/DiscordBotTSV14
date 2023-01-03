@@ -1,5 +1,5 @@
 import { HexColorString } from 'discord.js';
-import { model, Schema, Document, Model } from 'mongoose';
+import { model, Schema, Document } from 'mongoose';
 
 export interface IGuild extends Document {
 	id: string;

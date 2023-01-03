@@ -20,7 +20,7 @@ export default new Event("interactionCreate", async (interaction: ExtendedIntera
         const authorPerms = (interaction.channel as TextChannel).permissionsFor(interaction.member as GuildMember)
         if(command.userPermissions && !authorPerms.has(command.userPermissions)) return interaction.reply({embeds: [{description: await language(interaction.guild, 'errors.missingPerms')}] , ephemeral: true})
         
-        if(command.deferReply) await interaction.deferReply();
+        if(command.deferReply) await interaction.deferReply({ephemeral: command.ephemeral || false});
 
         command.run({
             client,

@@ -1,6 +1,11 @@
-import mongoose from 'mongoose';
+import { model, Schema, Document } from 'mongoose';
 
-const memberSchema = new mongoose.Schema({
+export interface IMember extends Document {
+	userId: string;
+	guildId: string;
+}
+
+const memberSchema = new Schema({
 	userId: {
 		type: String,
 		required: true
@@ -15,4 +20,4 @@ const memberSchema = new mongoose.Schema({
 })
 memberSchema.index({ userId: 1, guildId: 1 }, { unique: true });
 
-export default mongoose.model('Member', memberSchema);
+export default model<IMember>('Member', memberSchema);

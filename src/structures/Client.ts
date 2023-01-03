@@ -1,22 +1,13 @@
-import {
-    ApplicationCommandDataResolvable,
-    Client,
-    ClientEvents,
-    Collection,
-    GatewayIntentBits,
-    PartialUser,
-} from "discord.js";
+import { ApplicationCommandDataResolvable, Client, ClientEvents, Collection, GatewayIntentBits } from "discord.js";
 import type { CommandType } from "../typings/Command";
 import type { RegisterCommandsOptions } from "../typings/Client";
-import glob from "glob";
-import { promisify } from "util";
+import glob from "glob-promise";
 import { Event } from "./Event";
-import mongoose from 'mongoose'
-
-const globPromise = promisify(glob);
+import mongoose from 'mongoose';
 
 export class ExtendedClient extends Client {
     commands: Collection<string, CommandType> = new Collection();
+    config: any;
     language: String;
 
     constructor() {
@@ -63,16 +54,14 @@ export class ExtendedClient extends Client {
     async registerModules() {
         // Commands
         const slashCommands: ApplicationCommandDataResolvable[] = [];
-        const commandFiles = await globPromise(
-            `${__dirname}/../modules/*/commands/*{.ts,.js}`
-        );
-        commandFiles.forEach(async (filePath) => {
+        const commandFiles = await glob(`${__dirname}/../modules/*/commands/*{.ts,.js}`);
+        for (const filePath of commandFiles) {
             const command: CommandType = await this.importFile(filePath);
             if (!command.name) return;
 
             this.commands.set(command.name, command);
             slashCommands.push(command);
-        });
+        }
         
         this.on("ready", () => {
             this.registerCommands({
@@ -82,14 +71,12 @@ export class ExtendedClient extends Client {
         });
 
         // Event
-        const eventFiles = await globPromise(
-            `${__dirname}/../modules/*/events/*{.ts,.js}`
-        );
-        eventFiles.forEach(async (filePath) => {
+        const eventFiles = await glob(`${__dirname}/../modules/*/events/*{.ts,.js}`);
+        for (const filePath of eventFiles) {
             const event: Event<keyof ClientEvents> = await this.importFile(
                 filePath
             );
             this.on(event.event, event.run);
-        });
+        }
     }
 }

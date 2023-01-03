@@ -44,5 +44,6 @@ export type CommandType = {
     usage?: string;
     aliases?: string[];
     deferReply?: boolean;
+    ephemeral?: boolean;
     run: RunFunction;
 } & ChatInputApplicationCommandData;
